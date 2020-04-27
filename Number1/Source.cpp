@@ -39,14 +39,19 @@ unsigned int indices[] = { // 注意索引从0开始!
 const char* vertexShaderSource =
 "#version 330 core                                        \n"
 "layout(location = 0) in vec3 aPos;                       \n"
+"out vec4 vertexColor;                                    \n"
 "void main() {                                            \n"
-"		gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);} \n";
+"		gl_Position = vec4(aPos,1.0);                     \n"
+"       vertexColor=vec4(0.2,0.2,0.7,1.0);                \n"
+"}                                                        \n";
 
 const char* fragmentShaderSource =
 "#version 330 core                              \n"
+"in vec4 vertexColor;                           \n"
+"uniform vec4 ourColor;                         \n"
 "out vec4 FragColor;                            \n"
 "void main() {                                  \n"
-"    FragColor = vec4(0.2f, 0.2f, 1.0f, 1.0f);} \n";
+"    FragColor = ourColor;}                     \n";
 
 int main()
 {
@@ -76,7 +81,7 @@ int main()
 		return -1;
 	}
 	glViewport(0, 0, 800, 600);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	//glEnable(GL_CULL_FACE);
 	//glCullFace(GL_FRONT);
 	//VBO:从CPU来的模型的序列化数据，将所有顶点坐标，法向量等等全部序列化成一个字符串
@@ -162,7 +167,15 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);//还得再Bind一次，因为OpenGL是状态机，之前有可能状态已经改变了。
+
+		
+		
+		float timeValue = glfwGetTime();
+		float greeanValue = (sin(timeValue) / 2.0f) + 0.5f;
+		int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+		glUniform4f(vertexColorLocation, 0, greeanValue, 0, 1.0f);
 		glUseProgram(shaderProgram);
+
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		//glDrawArrays(GL_TRIANGLES, 0, 6);
 		glfwSwapBuffers(window);
