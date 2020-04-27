@@ -21,15 +21,15 @@ void ProcessInput(GLFWwindow* window);
 //};
 
 float vertices[] = {
-	0.5f, 0.5f, 0.0f,   // 右上角
-	0.5f, -0.5f, 0.0f,  // 右下角
-	-0.5f, -0.5f, 0.0f, // 左下角
-	-0.5f, 0.5f, 0.0f   // 左上角
+	// 位置              // 颜色
+	0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // 右下
+	-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // 左下
+	0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // 顶部
 };
 
 unsigned int indices[] = { // 注意索引从0开始! 
-	0, 1, 3, // 第一个三角形
-	1, 2, 3  // 第二个三角形
+	0, 1, 2, // 第一个三角形
+	//1, 2, 3  // 第二个三角形
 };
 
 
@@ -39,10 +39,11 @@ unsigned int indices[] = { // 注意索引从0开始!
 const char* vertexShaderSource =
 "#version 330 core                                        \n"
 "layout(location = 0) in vec3 aPos;                       \n"
+"layout(location = 1) in vec3 aColor;                      \n"
 "out vec4 vertexColor;                                    \n"
 "void main() {                                            \n"
 "		gl_Position = vec4(aPos,1.0);                     \n"
-"       vertexColor=vec4(0.2,0.2,0.7,1.0);                \n"
+"       vertexColor=vec4(aColor.x,aColor.y,aColor.z,1.0);\n"
 "}                                                        \n";
 
 const char* fragmentShaderSource =
@@ -51,7 +52,7 @@ const char* fragmentShaderSource =
 "uniform vec4 ourColor;                         \n"
 "out vec4 FragColor;                            \n"
 "void main() {                                  \n"
-"    FragColor = ourColor;}                     \n";
+"    FragColor = vertexColor;}                     \n";
 
 int main()
 {
@@ -150,9 +151,13 @@ int main()
 	glDeleteShader(fragmentShader);
 
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	//定点属性,在第零号栏位，每隔三个位置输送一笔资料，类型是GL_Float,不需要归一化。
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	//定点属性,在第零号栏位，每隔三个位置输送一笔资料，类型是GL_Float,不需要归一化。每隔6个挖一次，起始偏移量为0
 	glEnableVertexAttribArray(0); 
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
+	//定点属性,在第零号栏位，每隔三个位置输送一笔资料，类型是GL_Float,不需要归一化.
+	glEnableVertexAttribArray(1);
 
 
 
