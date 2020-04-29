@@ -3,6 +3,7 @@
 class Shader
 {
 public:
+	unsigned int ID;//Shader ProgramµÄID
 	Shader()=default;
 	Shader(const char* vertexPath, const char* fragmentPath);
 	//~Shader();
@@ -11,4 +12,10 @@ public:
 
 	const char* vertexSource;
 	const char* fragmentSource;
+
+	void use();
+
+private:
+	void checkCompileErrors(unsigned int ID,std::string type);
+
 };
