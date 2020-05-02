@@ -1,9 +1,12 @@
 #define GLEW_STATIC
+#define STB_IMAGE_IMPLEMENTATION
 #include<iostream>
 #include<Windows.h>
 #include<GL/glew.h>
 #include<GLFW/glfw3.h>
+#include"stb_image.h"
 #include"Shader.h"
+
 
 using namespace std;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -22,16 +25,16 @@ void ProcessInput(GLFWwindow* window);
 //};
 
 float vertices[] = {
-	// 位置              // 颜色
-	0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // 右下
-	-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // 左下
-	0.5f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f,    // 顶部
-	-0.5f,0.5f,0.0f,    0.8f,0.2f,0.2f
+	//     ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
+	0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // 右上
+	0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // 右下
+	-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // 左下
+	-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // 左上
 };
 
 unsigned int indices[] = { // 注意索引从0开始! 
 	0, 1, 2, // 第一个三角形
-	2,1,3  // 第二个三角形
+	0,2,3  // 第二个三角形
 };
 
 
@@ -139,13 +142,62 @@ int main()
 	//glDeleteShader(fragmentShader);
 
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	//定点属性,在第零号栏位，每隔三个位置输送一笔资料，类型是GL_Float,不需要归一化。每隔6个挖一次，起始偏移量为0
 	glEnableVertexAttribArray(0); 
 
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
 	//定点属性,在第零号栏位，每隔三个位置输送一笔资料，类型是GL_Float,不需要归一化.
 	glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	//定点属性,在第零号栏位，每隔三个位置输送一笔资料，类型是GL_Float,不需要归一化.
+	glEnableVertexAttribArray(2);
+
+
+	unsigned int TexBufferA;
+	glGenTextures(1, &TexBufferA);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, TexBufferA);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	int width, height, numChannel;
+	stbi_set_flip_vertically_on_load(true);
+	unsigned char *data = stbi_load("pic.jpg",&width,&height,&numChannel,0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE,data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		cout << "Load Image Failed" << endl;
+	}
+	stbi_image_free(data);
+
+
+
+	unsigned int TexBufferB;
+	glGenTextures(1, &TexBufferB);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, TexBufferB);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	unsigned char *data2 = stbi_load("awesomeface.png", &width, &height, &numChannel, 0);
+	if (data2)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data2);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		cout << "Load Image Failed" << endl;
+	}
+	stbi_image_free(data2);
 
 
 
@@ -158,16 +210,27 @@ int main()
 		/*在这个区间进行输入渲染指令*/
 		glClearColor(0.0f, 0.2f, 0.2f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+		
+		//下面四行可有可无，因为之前已经绑定过了
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, TexBufferA);
+		//glActiveTexture(GL_TEXTURE1);
+		//glBindTexture(GL_TEXTURE_2D, TexBufferB);
+		glUniform1i(glGetUniformLocation(testshader->ID, "ourTexture"), 0);
+		glUniform1i(glGetUniformLocation(testshader->ID, "ourFace"), 1);
+
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);//还得再Bind一次，因为OpenGL是状态机，之前有可能状态已经改变了。
-
 		
-		
-		//float timeValue = glfwGetTime();
-		//float greeanValue = (sin(timeValue) / 2.0f) + 0.5f;
-		//int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-		//glUniform4f(vertexColorLocation, 0, greeanValue, 0, 1.0f);
 		testshader->use();
+
+
+
+
+		float timeValue = glfwGetTime();
+		float greeanValue = (sin(timeValue) / 2.0f) + 0.5f;
+		int vertexColorLocation = glGetUniformLocation(testshader->ID, "ourColor");
+		glUniform4f(vertexColorLocation, 0, greeanValue, 0, 1.0f);
 
 		//glUseProgram(shaderProgram);
 
