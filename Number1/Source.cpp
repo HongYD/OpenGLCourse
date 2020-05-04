@@ -9,6 +9,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include"stb_image.h"
 #include"Shader.h"
+#include"Camera.h"
 
 
 using namespace std;
@@ -259,7 +260,8 @@ int main()
 	}
 	stbi_image_free(data2);
 	
-
+	//实例化相机类
+	Camera camera(glm::vec3(0.0, 0.0, 3.0f),glm::vec3(0.0,0.0,0.0),glm::vec3(0,1.0f,0));
 
 	//glfwSetFramebufferSizeCallback(window,framebuffer_size_callback);
 	
@@ -272,7 +274,8 @@ int main()
 	modelMat = glm::rotate(modelMat,glm::radians(-55.0f),glm::vec3(1.0f,0.0,0.0));
 
 	glm::mat4 viewMat;
-	viewMat = glm::translate(viewMat, glm::vec3(0.0, 0.0, -3.0f));
+	//viewMat = glm::translate(viewMat, glm::vec3(0.0, 0.0, -3.0f));
+	viewMat = camera.GetViewMatrix();
 
 	glm::mat4 projMat;
 	projMat = glm::perspective(glm::radians(45.0f), (float)800.0f / (float)600.0f, 0.1f, 100.0f);
