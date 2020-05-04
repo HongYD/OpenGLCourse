@@ -4,6 +4,9 @@
 #include<Windows.h>
 #include<GL/glew.h>
 #include<GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include"stb_image.h"
 #include"Shader.h"
 
@@ -202,9 +205,22 @@ int main()
 
 
 	//glfwSetFramebufferSizeCallback(window,framebuffer_size_callback);
+	
+	//calculate transformation matrix
+	//glm::mat4 trans;
+
+	//trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0));
+	//trans = glm::rotate(trans, (float)glfwGetTime()/*glm::radians(0.01f)*/, glm::vec3(0.0, 0.0, 1.0f));
+	//trans = glm::scale(trans, glm::vec3(2.0f, 2.0f, 2.0f));
 
 	while (!glfwWindowShouldClose(window))
 	{
+		
+
+		//trans = glm::translate(trans, glm::vec3(1.0f, 0.0f, 0.0));
+		//trans = glm::rotate(trans, (float)glfwGetTime()/*glm::radians(0.01f)*/, glm::vec3(0.0, 0.0, 1.0f));
+		//trans = glm::scale(trans, glm::vec3(2.0f, 2.0f, 2.0f));
+		
 		ProcessInput(window);//在这一帧进行按键获取
 
 		/*在这个区间进行输入渲染指令*/
@@ -222,6 +238,17 @@ int main()
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);//还得再Bind一次，因为OpenGL是状态机，之前有可能状态已经改变了。
 		
+		//先缩放，再旋转，最后位移
+		//MT位移，MR旋转，MS缩放，V定点位置：
+		//MT * MR * MS * V:执行的时候会“从右向左”，即先缩放，再旋转，最后位移
+		//但是在OpenGL中，由于是栈调用，所以缩放的语句应该写在旋转语句之后
+		glm::mat4 trans;
+		trans = glm::translate(trans, glm::vec3(-0.0001f, 0.0, 0.0));
+		trans = glm::rotate(trans, glm::radians(0.01f), glm::vec3(0.0, 0.0, 1.0f));
+		trans = glm::scale(trans, glm::vec3(1.0002f, 1.0002f, 1.0002f));
+
+		unsigned int transformLoc = glGetUniformLocation(testshader->ID, "transform");
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 		testshader->use();
 
 
