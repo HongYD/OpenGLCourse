@@ -15,6 +15,13 @@
 using namespace std;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void ProcessInput(GLFWwindow* window);
+void mouse_callback(GLFWwindow* window, double xPos, double yPos);
+float lastX, lastY;
+bool firstMouse = true;
+//实例化相机类
+//Camera camera(glm::vec3(0.0, 0.0, 3.0f),glm::vec3(0.0,0.0,0.0),glm::vec3(0,1.0f,0));
+Camera camera(glm::vec3(0.0, 0.0, 3.0f), glm::radians(2.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0f, 0.0));
+
 
 //float vertices[] = {
 //	//第一个三角形
@@ -119,6 +126,8 @@ int main()
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(window, mouse_callback);
 	//system("pause");
 	//return 0;
 
@@ -260,8 +269,7 @@ int main()
 	}
 	stbi_image_free(data2);
 	
-	//实例化相机类
-	Camera camera(glm::vec3(0.0, 0.0, 3.0f),glm::vec3(0.0,0.0,0.0),glm::vec3(0,1.0f,0));
+	
 
 	//glfwSetFramebufferSizeCallback(window,framebuffer_size_callback);
 	
@@ -275,7 +283,7 @@ int main()
 
 	glm::mat4 viewMat;
 	//viewMat = glm::translate(viewMat, glm::vec3(0.0, 0.0, -3.0f));
-	viewMat = camera.GetViewMatrix();
+	//viewMat = camera.GetViewMatrix();
 
 	glm::mat4 projMat;
 	projMat = glm::perspective(glm::radians(45.0f), (float)800.0f / (float)600.0f, 0.1f, 100.0f);
@@ -302,6 +310,8 @@ int main()
 
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);//还得再Bind一次，因为OpenGL是状态机，之前有可能状态已经改变了。
+
+		viewMat = camera.GetViewMatrix();
 
 		for (int i = 0; i < 10; i++)
 		{
@@ -354,6 +364,7 @@ int main()
 		//glDrawArrays(GL_TRIANGLES, 0, 6);
 		glfwSwapBuffers(window);
 		glfwPollEvents();//在下一帧进行对按键行为进行处理
+		camera.UpdateCameraPos();
 	}
 
 	glfwTerminate();
@@ -371,4 +382,33 @@ void ProcessInput(GLFWwindow* window)
 	{
 		glfwSetWindowShouldClose(window, true);
 	}
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	{
+		camera.SpeedZ = 0.01f;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		camera.SpeedZ = -0.01f;
+	}
+	else
+	{
+		camera.SpeedZ = 0;
+	}
+}
+
+void mouse_callback(GLFWwindow* window, double xPos, double yPos)
+{
+	if (firstMouse == true)
+	{
+		lastX = xPos;
+		lastY = yPos;
+		firstMouse = false;
+	}
+	float deltaX, deltaY;
+	deltaX = xPos - lastX;
+	deltaY = yPos - lastY;
+	lastX = xPos;
+	lastY = yPos;
+	camera.ProcessMouseMovement(deltaX, deltaY);
+	//cout << "x: " << deltaX << " , " << "y: " << deltaY << endl;
 }
