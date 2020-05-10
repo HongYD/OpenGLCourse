@@ -317,7 +317,7 @@ int main()
 			glUniformMatrix4fv(glGetUniformLocation(testshader->ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 			glUniformMatrix4fv(glGetUniformLocation(testshader->ID, "modelMat2"), 1, GL_FALSE, glm::value_ptr(modelMat2));
 			glUniform3f(glGetUniformLocation(testshader->ID, "objColor"), 1.0f, 0.5f, 0.31f);
-			glUniform3f(glGetUniformLocation(testshader->ID, "ambientColor"), 1.0f, 1.0f, 1.0f);
+			glUniform3f(glGetUniformLocation(testshader->ID, "ambientColor"), 1.0f, 0.5f, 0.31f);
 			glUniform3f(glGetUniformLocation(testshader->ID, "lightPos"), 10.0f, 10.0f, 5.0f);
 			glUniform3f(glGetUniformLocation(testshader->ID, "lightColor"), 1.0f, 1.0f, 1.0f);
 

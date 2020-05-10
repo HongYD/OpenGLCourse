@@ -20,6 +20,6 @@ void main() {
 	vec3 lightDir=normalize(lightPos-FragPos);
 	vec3 diffuseColor=max(dot(lightDir,Normal),0.0)*lightColor;             
     //FragColor = vertexColor;
-	FragColor = (texture(ourTexture,TexCoord) * texture(ourFace,TexCoord)) * vec4((10.0*ambientColor*diffuseColor)*objColor,1.0);
+	FragColor = (texture(ourTexture,TexCoord) * texture(ourFace,TexCoord)) * vec4((ambientColor+20.0*diffuseColor)*objColor,1.0);
 	//FragColor=vec4(objColor*ambientColor,1.0);
 }
