@@ -37,8 +37,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="vertexSource.txt" />
-    <Text Include="fragmentSource.txt" />
+    <Text Include="fragmentSource.shader" />
+    <Text Include="vertexSource.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="pic.jpg">

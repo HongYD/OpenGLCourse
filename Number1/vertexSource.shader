@@ -11,7 +11,8 @@ uniform mat4 model;
                    
 out vec4 vertexColor; 
 out vec2 TexCoord;                                   
-void main() {                                            
+void main() {
+        //这里是有顺序的                                            
 		gl_Position = projMat*viewMat*modelMat*model*vec4(aPos,1.0);                    
        //vertexColor=vec4(aColor.x,aColor.y,aColor.z,1.0); 
 	   TexCoord=aTexCoord;

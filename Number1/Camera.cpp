@@ -40,6 +40,7 @@ glm::mat4 Camera::GetViewMatrix()
 
 void Camera::ProcessMouseMovement(float _deltaX, float _deltaY)
 {
+
 	Pitch += _deltaY*MouseSensitivity;
 	Yaw += _deltaX*MouseSensitivity;
 	UpdateCameraVectors();
@@ -48,6 +49,13 @@ void Camera::ProcessMouseMovement(float _deltaX, float _deltaY)
 void Camera::UpdateCameraPos()
 {
 	Position += Forward*SpeedZ;
+}
+
+float Camera::lerp(float start, float end, float interporlate)
+{
+
+		return start + interporlate * (end - start);
+	
 }
 
 

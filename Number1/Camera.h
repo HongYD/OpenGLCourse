@@ -19,11 +19,14 @@ public:
 	float Yaw;
 	float MouseSensitivity;
 	float SpeedZ = 0.0;
+	float CamSpeed = 0.02f;
 
 	glm::mat4 GetViewMatrix();
 	void ProcessMouseMovement(float _deltaX,float _deltaY);
 	void UpdateCameraPos();
+	static float lerp(float start, float end, float interporlate);
 private:
+	const float CamSpeedMax = 5.0f;
 	void UpdateCameraVectors();
 };
 

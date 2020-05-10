@@ -164,8 +164,10 @@
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="fragmentSource.txt" />
-    <Text Include="vertexSource.txt" />
+    <Text Include="fragmentSource.shader">
+      <DeploymentContent>false</DeploymentContent>
+    </Text>
+    <Text Include="vertexSource.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="awesomeface.png" />
