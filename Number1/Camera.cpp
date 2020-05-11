@@ -23,7 +23,7 @@ Camera::Camera(glm::vec3 _position, float _pitch, float _yaw, glm::vec3 _worldup
 	Forward.y = glm::sin(Pitch);
 	Forward.z = glm::cos(Pitch)*glm::cos(Yaw);
 	Right = glm::normalize(glm::cross(Forward, WorldUp));
-	Up = glm::normalize(glm::cross(Forward, Right));
+	Up = glm::normalize(glm::cross(Right, Forward));
 	MouseSensitivity = 0.01f;
 }
 
@@ -48,7 +48,7 @@ void Camera::ProcessMouseMovement(float _deltaX, float _deltaY)
 
 void Camera::UpdateCameraPos()
 {
-	Position += Forward*SpeedZ;
+	Position += Forward*SpeedZ+Right*SpeedX+Up*SpeedY;
 }
 
 float Camera::lerp(float start, float end, float interporlate)

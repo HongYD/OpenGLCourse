@@ -18,7 +18,8 @@ void main() {
         //这里是有顺序的
 		mat4 modelMat=modelMat2*model;	                                            
 		gl_Position = projMat*viewMat*modelMat*vec4(aPos,1.0); 
-		Normal=mat3(modelMat)*aNormal;                   
+		FragPos=(modelMat*vec4(aPos.xyz,1.0)).xyz;
+		Normal=mat3(transpose(inverse(modelMat)))*aNormal;                   
        //vertexColor=vec4(aColor.x,aColor.y,aColor.z,1.0); 
 	   TexCoord=aTexCoord;
 }    

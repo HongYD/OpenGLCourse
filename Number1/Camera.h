@@ -18,6 +18,8 @@ public:
 	float Pitch;
 	float Yaw;
 	float MouseSensitivity;
+	float SpeedX = 0.0;
+	float SpeedY = 0.0;
 	float SpeedZ = 0.0;
 	float CamSpeed = 0.02f;
 
