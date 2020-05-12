@@ -10,6 +10,7 @@
 #include"stb_image.h"
 #include"Shader.h"
 #include"Camera.h"
+#include"Material.h"
 
 using namespace std;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -150,6 +151,12 @@ int main()
 	#pragma region InitShaderProgramm
 	Shader* testshader = new Shader("vertexSource.shader", "fragmentSource.shader");
 	#pragma endregion InitShaderProgramm
+
+	#pragma region Init Material
+	Material* myMaterial = new Material(testshader,glm::vec3(1.0f,1.0f,1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),64.0f);
+
+	#pragma endregion Init Material
+
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	//glEnable(GL_CULL_FACE);
 	//glCullFace(GL_FRONT);
@@ -321,6 +328,16 @@ int main()
 			glUniform3f(glGetUniformLocation(testshader->ID, "lightPos"), 10.0f, 10.0f, 5.0f);
 			glUniform3f(glGetUniformLocation(testshader->ID, "lightColor"), 1.0f, 1.0f, 1.0f);
 			glUniform3f(glGetUniformLocation(testshader->ID, "cameraPos"), camera.Position.x, camera.Position.y, camera.Position.z);
+
+			myMaterial->shader->SetUniform3f("material.ambient", myMaterial->ambient);
+			myMaterial->shader->SetUniform3f("material.diffuse", myMaterial->diffuse);
+			myMaterial->shader->SetUniform3f("material.specular", myMaterial->specular);
+			myMaterial->shader->SetUniform1f("material.shininess", myMaterial->shininess);
+			////glUniform3f已经封装在了Shader.h中，所以这里注释
+			//glUniform3f(glGetUniformLocation(testshader->ID, "material.ambient"), 1.0f,1.0f,1.0f);
+			//glUniform3f(glGetUniformLocation(testshader->ID, "material.diffuse"), 1.0,1.0,1.0f);
+			//glUniform3f(glGetUniformLocation(testshader->ID, "material.specular"), 0.0,1.0f,0.0);
+			glUniform1f(glGetUniformLocation(testshader->ID, "material.shininess"), 256.0f);
 			
 
 			//Set Model
