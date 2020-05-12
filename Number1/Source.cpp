@@ -153,8 +153,10 @@ int main()
 	#pragma endregion InitShaderProgramm
 
 	#pragma region Init Material
-	Material* myMaterial = new Material(testshader,glm::vec3(1.0f,1.0f,1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),64.0f);
-
+	//直接输入颜色的方法
+	//Material* myMaterial = new Material(testshader,glm::vec3(1.0f,1.0f,1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),64.0f);
+	//利用光照贴图的方法
+	Material* myMaterial = new Material(testshader,LoadImageToGPU("matrix.jpg",GL_RGB,GL_RGB,Shader::EMISSION) ,glm::vec3(1.0f, 1.0f, 1.0f), LoadImageToGPU("container2.png", GL_RGBA, GL_RGBA, Shader::DIFFUSE), LoadImageToGPU("container2_specular.png", GL_RGBA, GL_RGBA, Shader::SPECULAR), 256.0f);
 	#pragma endregion Init Material
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -248,8 +250,8 @@ int main()
 
 
 	#pragma region Init And Load Textures
-	unsigned int TexBufferA = LoadImageToGPU("pic.jpg",GL_RGB,GL_RGB,0);
-	unsigned int TexBufferB = LoadImageToGPU("awesomeface.png", GL_RGBA, GL_RGBA, 1);
+	//unsigned int TexBufferA = LoadImageToGPU("pic.jpg",GL_RGB,GL_RGB,0);
+	//unsigned int TexBufferB = LoadImageToGPU("awesomeface.png", GL_RGBA, GL_RGBA, 1);
 	#pragma endregion Init And Load Textures
 	//glfwSetFramebufferSizeCallback(window,framebuffer_size_callback);
 	
@@ -297,13 +299,15 @@ int main()
 			//下面四行可有可无，因为之前已经绑定过了
 			//Set Material->Texture
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, TexBufferA);
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, TexBufferB);
+			glBindTexture(GL_TEXTURE_2D, myMaterial->diffuseMapID);
+			glActiveTexture(GL_TEXTURE0+Shader::SPECULAR);
+			glBindTexture(GL_TEXTURE_2D, myMaterial->specularMapID);
+			glActiveTexture(GL_TEXTURE0+Shader::EMISSION);
+			glBindTexture(GL_TEXTURE_2D, myMaterial->emissionMapID);
 
 			//Set Material->Uniform
-			glUniform1i(glGetUniformLocation(testshader->ID, "ourTexture"), 0);
-			glUniform1i(glGetUniformLocation(testshader->ID, "ourFace"), 1);
+			//glUniform1i(glGetUniformLocation(testshader->ID, "ourTexture"), 0);
+			//glUniform1i(glGetUniformLocation(testshader->ID, "ourFace"), 1);
 
 			glm::mat4 modelMat2;
 			modelMat2 = glm::translate(modelMat2, cubePositions[i]);
@@ -323,21 +327,29 @@ int main()
 			glUniformMatrix4fv(glGetUniformLocation(testshader->ID, "viewMat"), 1, GL_FALSE, glm::value_ptr(viewMat));;
 			glUniformMatrix4fv(glGetUniformLocation(testshader->ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 			glUniformMatrix4fv(glGetUniformLocation(testshader->ID, "modelMat2"), 1, GL_FALSE, glm::value_ptr(modelMat2));
-			glUniform3f(glGetUniformLocation(testshader->ID, "objColor"), 1.0f, 0.5f, 0.31f);
-			glUniform3f(glGetUniformLocation(testshader->ID, "ambientColor"), 1.0f, 0.5f, 0.31f);
+			glUniform3f(glGetUniformLocation(testshader->ID, "objColor"), 1.0f, 1.0f, 1.0f);
+			glUniform3f(glGetUniformLocation(testshader->ID, "ambientColor"), 0.3f, 0.3f, 0.3f);
 			glUniform3f(glGetUniformLocation(testshader->ID, "lightPos"), 10.0f, 10.0f, 5.0f);
 			glUniform3f(glGetUniformLocation(testshader->ID, "lightColor"), 1.0f, 1.0f, 1.0f);
 			glUniform3f(glGetUniformLocation(testshader->ID, "cameraPos"), camera.Position.x, camera.Position.y, camera.Position.z);
 
 			myMaterial->shader->SetUniform3f("material.ambient", myMaterial->ambient);
-			myMaterial->shader->SetUniform3f("material.diffuse", myMaterial->diffuse);
-			myMaterial->shader->SetUniform3f("material.specular", myMaterial->specular);
+			//myMaterial->shader->SetUniform3f("material.diffuse", myMaterial->diffuse);
+			//emission Map
+			myMaterial->shader->SetUniform1i("material.emissionMap", Shader::EMISSION);
+			//diffuse Map
+			myMaterial->shader->SetUniform1i("material.diffuseMap", Shader::DIFFUSE);
+			//specular Map
+			myMaterial->shader->SetUniform1i("material.specularMap", Shader::SPECULAR);
+			//myMaterial->shader->SetUniform3f("material.specular", myMaterial->specular);
 			myMaterial->shader->SetUniform1f("material.shininess", myMaterial->shininess);
+
+			
 			////glUniform3f已经封装在了Shader.h中，所以这里注释
 			//glUniform3f(glGetUniformLocation(testshader->ID, "material.ambient"), 1.0f,1.0f,1.0f);
 			//glUniform3f(glGetUniformLocation(testshader->ID, "material.diffuse"), 1.0,1.0,1.0f);
 			//glUniform3f(glGetUniformLocation(testshader->ID, "material.specular"), 0.0,1.0f,0.0);
-			glUniform1f(glGetUniformLocation(testshader->ID, "material.shininess"), 256.0f);
+			//glUniform1f(glGetUniformLocation(testshader->ID, "material.shininess"), 256.0f);
 			
 
 			//Set Model

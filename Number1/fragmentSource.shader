@@ -9,12 +9,16 @@ struct Material{
 	vec3 diffuse;
 	vec3 specular;
 	float shininess;
+
+	sampler2D diffuseMap;
+	sampler2D specularMap;
+	sampler2D emissionMap;
 };
 
       
 out vec4 FragColor;
-in vec2 TexCoord; 
 
+in vec2 TexCoord; 
 in vec3 FragPos;
 in vec3 Normal;  
 
@@ -33,17 +37,23 @@ void main() {
 	vec3 reflectVec=reflect(-lightDir,Normal);
 	vec3 cameraVec=normalize(cameraPos-FragPos);
 
-	//specular:
-	float specularAmount=pow(max(dot(reflectVec,cameraVec),0.0),material.shininess);
-	vec3 specularColor=material.specular*specularAmount*lightColor;
+	//EmissionMap:
+	vec3 emissionColor=texture(material.emissionMap,TexCoord).rgb;
 
-	//diffuse:
-	vec3 diffuseColor=material.diffuse*max(dot(lightDir,Normal),0.0)*lightColor;
+	//specular Color and Specular Map:
+	float specularAmount=pow(max(dot(reflectVec,cameraVec),0.0),material.shininess);
+	//vec3 specularColor=material.specular*specularAmount*lightColor;
+	vec3 spcularMapColor=texture(material.specularMap,TexCoord).rgb*specularAmount*lightColor;
+
+	//diffuse Color and diffuse Map:
+	//vec3 diffuseColor=material.diffuse*max(dot(lightDir,Normal),0.0)*lightColor;
+	vec3 diffuseMapColor=texture(material.diffuseMap,TexCoord).rgb*max(dot(lightDir,Normal),0.0)*lightColor;
 	             
     //FragColor = vertexColor;
 	//ambient:
-	vec3 ambient=material.ambient*ambientColor;
+	vec3 ambient=material.ambient*ambientColor*texture(material.diffuseMap,TexCoord).rgb;
 
-	FragColor = (texture(ourTexture,TexCoord) * texture(ourFace,TexCoord)) * vec4((ambient+10.0f*diffuseColor+80.0f*specularColor)*objColor,1.0);
+	//º”…œÃ˘Õº(texture(ourTexture,TexCoord) * texture(ourFace,TexCoord)) * 
+	FragColor = emissionColor+vec4((ambient+diffuseMapColor+spcularMapColor)*objColor,1.0);
 	//FragColor=vec4(objColor*ambientColor,1.0);
 }
