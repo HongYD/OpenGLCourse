@@ -11,6 +11,9 @@
 #include"Shader.h"
 #include"Camera.h"
 #include"Material.h"
+#include"LightDirectional.h"
+#include"LightPoint.h"
+#include"LightSpot.h"
 
 using namespace std;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -24,6 +27,12 @@ unsigned int LoadImageToGPU(const char* filename, GLint internalformat, GLenum f
 #pragma region CameraDeclare
 Camera camera(glm::vec3(0.0, 0.0, 3.0f), glm::radians(2.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0f, 0.0));
 #pragma endregion
+#pragma region light declare
+//LightDirectional light = LightDirectional(glm::vec3(10.0f, 10.0f, -5.0f), glm::vec3(glm::radians(45.0f), 0.0, 0.0));
+//LightPoint lightpoint = LightPoint(glm::vec3(1.0f, 1.0f, -1.0f),glm::vec3(1.0f,1.0f,1.0f));
+LightSpot lightspot = LightSpot(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(glm::radians(90.0f), 0.0, 0.0), glm::vec3(1.0f, 1.0f, 1.0f));
+
+#pragma endregion light declare
 
 //float vertices[] = {
 //	//第一个三角形
@@ -322,16 +331,39 @@ int main()
 			//unsigned int transformLoc = glGetUniformLocation(testshader->ID, "transform");
 			//glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans))
 			glm::mat4 model;
-			model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f)*(i+1), glm::vec3(0.5f, 1.0f, 0.0f));
+			model = glm::rotate(model, (float)glfwGetTime()* glm::radians(50.0f)*(i+1), glm::vec3(0.5f, 1.0f, 0.0f));
 			glUniformMatrix4fv(glGetUniformLocation(testshader->ID, "projMat"), 1, GL_FALSE, glm::value_ptr(projMat));
 			glUniformMatrix4fv(glGetUniformLocation(testshader->ID, "viewMat"), 1, GL_FALSE, glm::value_ptr(viewMat));;
 			glUniformMatrix4fv(glGetUniformLocation(testshader->ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 			glUniformMatrix4fv(glGetUniformLocation(testshader->ID, "modelMat2"), 1, GL_FALSE, glm::value_ptr(modelMat2));
 			glUniform3f(glGetUniformLocation(testshader->ID, "objColor"), 1.0f, 1.0f, 1.0f);
-			glUniform3f(glGetUniformLocation(testshader->ID, "ambientColor"), 0.3f, 0.3f, 0.3f);
-			glUniform3f(glGetUniformLocation(testshader->ID, "lightPos"), 10.0f, 10.0f, 5.0f);
-			glUniform3f(glGetUniformLocation(testshader->ID, "lightColor"), 1.0f, 1.0f, 1.0f);
+			glUniform3f(glGetUniformLocation(testshader->ID, "ambientColor"), 0.1f, 0.1f, 0.1f);
+
+			//加入平行光之后，这个lightPos就不需要了
+			//glUniform3f(glGetUniformLocation(testshader->ID, "lightPos"), 10.0f, 10.0f, 5.0f);
+			//glUniform3f(glGetUniformLocation(testshader->ID, "lightColor"), 1.0f, 1.0f, 1.0f);
+			//glUniform3f(glGetUniformLocation(testshader->ID, "lightDir"), 10.0f, 10.0f, 5.0f);
 			glUniform3f(glGetUniformLocation(testshader->ID, "cameraPos"), camera.Position.x, camera.Position.y, camera.Position.z);
+			
+			//光源设置
+			//平行光源
+			//myMaterial->shader->SetUniform3f("lightDirUniform", light.direction);
+			//myMaterial->shader->SetUniform3f("lightColor", light.color);
+
+			//点光源，点光源需要光源位置和衰减值参数
+			//myMaterial->shader->SetUniform3f("lightPos", lightpoint.position);
+			//myMaterial->shader->SetUniform3f("lightColor", lightpoint.color);
+			//衰减参数
+			//myMaterial->shader->SetUniform1f("lightP.constant",lightpoint.constant);
+			//myMaterial->shader->SetUniform1f("lightP.linear",lightpoint.linear);
+			//myMaterial->shader->SetUniform1f("lightP.quadratic",lightpoint.quadratic);
+
+			//聚光灯
+			myMaterial->shader->SetUniform3f("lightDirUniform", lightspot.direction);
+			myMaterial->shader->SetUniform1f("lightS.cosPhy", lightspot.cosPhy);
+			myMaterial->shader->SetUniform3f("lightPos", lightspot.position);
+			myMaterial->shader->SetUniform3f("lightColor", lightspot.color);
+
 
 			myMaterial->shader->SetUniform3f("material.ambient", myMaterial->ambient);
 			//myMaterial->shader->SetUniform3f("material.diffuse", myMaterial->diffuse);
