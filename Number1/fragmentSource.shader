@@ -22,7 +22,8 @@ struct LightPoint{
 };
 
 struct LightSpot{
-	float cosPhy;
+	float cosPhyInner;
+	float cosPhyOutter;
 };
 
       
@@ -73,17 +74,29 @@ void main() {
 
 	float cosTheta=dot(normalize(FragPos-lightPos),-1*lightDirUniform);
 
-	if(cosTheta>lightS.cosPhy)
-	{
-		//inside
-		FragColor = vec4((ambient+diffuseMapColor+spcularMapColor)*objColor,1.0);
+	//if(cosTheta>lightS.cosPhy)
+	//{
+	//	//inside
+	//	FragColor = vec4((ambient+diffuseMapColor+spcularMapColor)*objColor,1.0);
 
+	//}
+	//else{
+	//	//outside
+	//	FragColor = vec4((ambient)*objColor,1.0);
+	//}
+	float spotRation;
+
+	if(cosTheta>lightS.cosPhyInner){
+		spotRation=1.0;
+	}
+	else if(cosTheta>lightS.cosPhyOutter){
+		spotRation=1.0-(cosTheta-lightS.cosPhyInner)/(lightS.cosPhyOutter-lightS.cosPhyInner);
 	}
 	else{
-		//outside
-		FragColor = vec4((ambient)*objColor,1.0);
+		spotRation=0.0;
 	}
 
+	FragColor = vec4((ambient+(diffuseMapColor+spcularMapColor)*spotRation)*objColor,1.0);
 	//加上贴图(texture(ourTexture,TexCoord) * texture(ourFace,TexCoord)) * 
 	//加上自发光emissionColor+
 	//FragColor = vec4((attenuation*(ambient+2*diffuseMapColor+spcularMapColor))*objColor,1.0);

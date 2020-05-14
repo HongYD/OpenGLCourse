@@ -30,7 +30,7 @@ Camera camera(glm::vec3(0.0, 0.0, 3.0f), glm::radians(2.0f), glm::radians(180.0f
 #pragma region light declare
 //LightDirectional light = LightDirectional(glm::vec3(10.0f, 10.0f, -5.0f), glm::vec3(glm::radians(45.0f), 0.0, 0.0));
 //LightPoint lightpoint = LightPoint(glm::vec3(1.0f, 1.0f, -1.0f),glm::vec3(1.0f,1.0f,1.0f));
-LightSpot lightspot = LightSpot(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(glm::radians(90.0f), 0.0, 0.0), glm::vec3(1.0f, 1.0f, 1.0f));
+LightSpot lightspot = LightSpot(glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(glm::radians(90.0f), 0.0, 0.0), glm::vec3(1.0f, 1.0f, 1.0f));
 
 #pragma endregion light declare
 
@@ -360,7 +360,7 @@ int main()
 
 			//¾Û¹âµÆ
 			myMaterial->shader->SetUniform3f("lightDirUniform", lightspot.direction);
-			myMaterial->shader->SetUniform1f("lightS.cosPhy", lightspot.cosPhy);
+			myMaterial->shader->SetUniform1f("lightS.cosPhyInner", lightspot.cosPhyInner);
 			myMaterial->shader->SetUniform3f("lightPos", lightspot.position);
 			myMaterial->shader->SetUniform3f("lightColor", lightspot.color);
 
