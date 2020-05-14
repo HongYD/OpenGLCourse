@@ -28,9 +28,15 @@ unsigned int LoadImageToGPU(const char* filename, GLint internalformat, GLenum f
 Camera camera(glm::vec3(0.0, 0.0, 3.0f), glm::radians(2.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0f, 0.0));
 #pragma endregion
 #pragma region light declare
-//LightDirectional light = LightDirectional(glm::vec3(10.0f, 10.0f, -5.0f), glm::vec3(glm::radians(45.0f), 0.0, 0.0));
-//LightPoint lightpoint = LightPoint(glm::vec3(1.0f, 1.0f, -1.0f),glm::vec3(1.0f,1.0f,1.0f));
-LightSpot lightspot = LightSpot(glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(glm::radians(90.0f), 0.0, 0.0), glm::vec3(1.0f, 1.0f, 1.0f));
+LightDirectional light = LightDirectional(glm::vec3(1.0f, 1.0f, -1.0f), glm::vec3(glm::radians(45.0f), 0.0, 0.0),glm::vec3(1.0f,1.0f,1.0f));
+LightPoint lightpoint0 = LightPoint(glm::vec3(1.0f, 0.0f, 0.0f),glm::vec3(1.0f,1.0f,1.0f));
+LightPoint lightpoint1 = LightPoint(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+LightPoint lightpoint2 = LightPoint(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0));
+LightPoint lightpoint3 = LightPoint(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0, 0.0f, 1.0f));
+
+
+
+LightSpot lightspot = LightSpot(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(glm::radians(90.0f), glm::radians(0.0f), glm::radians(0.0f)), glm::vec3(1.0f, 1.0f, 1.0f));
 
 #pragma endregion light declare
 
@@ -165,7 +171,7 @@ int main()
 	//直接输入颜色的方法
 	//Material* myMaterial = new Material(testshader,glm::vec3(1.0f,1.0f,1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),64.0f);
 	//利用光照贴图的方法
-	Material* myMaterial = new Material(testshader,LoadImageToGPU("matrix.jpg",GL_RGB,GL_RGB,Shader::EMISSION) ,glm::vec3(1.0f, 1.0f, 1.0f), LoadImageToGPU("container2.png", GL_RGBA, GL_RGBA, Shader::DIFFUSE), LoadImageToGPU("container2_specular.png", GL_RGBA, GL_RGBA, Shader::SPECULAR), 256.0f);
+	Material* myMaterial = new Material(testshader,LoadImageToGPU("matrix.jpg",GL_RGB,GL_RGB,Shader::EMISSION) ,glm::vec3(1.0f, 1.0f, 1.0f), LoadImageToGPU("container2.png", GL_RGBA, GL_RGBA, Shader::DIFFUSE), LoadImageToGPU("container2_specular.png", GL_RGBA, GL_RGBA, Shader::SPECULAR), 32.0f);
 	#pragma endregion Init Material
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -337,7 +343,7 @@ int main()
 			glUniformMatrix4fv(glGetUniformLocation(testshader->ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 			glUniformMatrix4fv(glGetUniformLocation(testshader->ID, "modelMat2"), 1, GL_FALSE, glm::value_ptr(modelMat2));
 			glUniform3f(glGetUniformLocation(testshader->ID, "objColor"), 1.0f, 1.0f, 1.0f);
-			glUniform3f(glGetUniformLocation(testshader->ID, "ambientColor"), 0.1f, 0.1f, 0.1f);
+			glUniform3f(glGetUniformLocation(testshader->ID, "ambientColor"), 0.2f, 0.2f, 0.2f);
 
 			//加入平行光之后，这个lightPos就不需要了
 			//glUniform3f(glGetUniformLocation(testshader->ID, "lightPos"), 10.0f, 10.0f, 5.0f);
@@ -347,22 +353,58 @@ int main()
 			
 			//光源设置
 			//平行光源
-			//myMaterial->shader->SetUniform3f("lightDirUniform", light.direction);
-			//myMaterial->shader->SetUniform3f("lightColor", light.color);
+			myMaterial->shader->SetUniform3f("lightD.pos", light.position);
+			myMaterial->shader->SetUniform3f("lightD.color", light.color);
+			myMaterial->shader->SetUniform3f("lightD.dirToLight", light.direction);
 
-			//点光源，点光源需要光源位置和衰减值参数
-			//myMaterial->shader->SetUniform3f("lightPos", lightpoint.position);
-			//myMaterial->shader->SetUniform3f("lightColor", lightpoint.color);
+			//点光源1，点光源需要光源位置和衰减值参数
+			myMaterial->shader->SetUniform3f("lightP0.pos", lightpoint0.position);
+			myMaterial->shader->SetUniform3f("lightP0.color", lightpoint0.color);
 			//衰减参数
-			//myMaterial->shader->SetUniform1f("lightP.constant",lightpoint.constant);
-			//myMaterial->shader->SetUniform1f("lightP.linear",lightpoint.linear);
-			//myMaterial->shader->SetUniform1f("lightP.quadratic",lightpoint.quadratic);
+			myMaterial->shader->SetUniform1f("lightP0.constant",lightpoint0.constant);
+			myMaterial->shader->SetUniform1f("lightP0.linear",lightpoint0.linear);
+			myMaterial->shader->SetUniform1f("lightP0.quadratic",lightpoint0.quadratic);
+
+			//点光源2，点光源需要光源位置和衰减值参数
+			myMaterial->shader->SetUniform3f("lightP1.pos", lightpoint1.position);
+			myMaterial->shader->SetUniform3f("lightP1.color", lightpoint1.color);
+			//衰减参数
+			myMaterial->shader->SetUniform1f("lightP1.constant", lightpoint1.constant);
+			myMaterial->shader->SetUniform1f("lightP1.linear", lightpoint1.linear);
+			myMaterial->shader->SetUniform1f("lightP1.quadratic", lightpoint1.quadratic);
+
+			//点光源3，点光源需要光源位置和衰减值参数
+			myMaterial->shader->SetUniform3f("lightP2.pos", lightpoint2.position);
+			myMaterial->shader->SetUniform3f("lightP2.color", lightpoint2.color);
+			//衰减参数
+			myMaterial->shader->SetUniform1f("lightP2.constant", lightpoint2.constant);
+			myMaterial->shader->SetUniform1f("lightP2.linear", lightpoint2.linear);
+			myMaterial->shader->SetUniform1f("lightP2.quadratic", lightpoint2.quadratic);
+
+			//点光源4，点光源需要光源位置和衰减值参数
+			myMaterial->shader->SetUniform3f("lightP3.pos", lightpoint3.position);
+			myMaterial->shader->SetUniform3f("lightP3.color", lightpoint3.color);
+			//衰减参数
+			myMaterial->shader->SetUniform1f("lightP3.constant", lightpoint3.constant);
+			myMaterial->shader->SetUniform1f("lightP3.linear", lightpoint3.linear);
+			myMaterial->shader->SetUniform1f("lightP3.quadratic", lightpoint3.quadratic);
 
 			//聚光灯
-			myMaterial->shader->SetUniform3f("lightDirUniform", lightspot.direction);
+			myMaterial->shader->SetUniform3f("lightS.pos", lightspot.position);
+			myMaterial->shader->SetUniform3f("lightS.color", lightspot.color);
+			myMaterial->shader->SetUniform3f("lightS.dirToLight", lightspot.direction);
+			//衰减参数
+			myMaterial->shader->SetUniform1f("lightS.constant", lightspot.constant);
+			myMaterial->shader->SetUniform1f("lightS.linear", lightspot.linear);
+			myMaterial->shader->SetUniform1f("lightS.quadratic", lightspot.quadratic);
 			myMaterial->shader->SetUniform1f("lightS.cosPhyInner", lightspot.cosPhyInner);
-			myMaterial->shader->SetUniform3f("lightPos", lightspot.position);
-			myMaterial->shader->SetUniform3f("lightColor", lightspot.color);
+			myMaterial->shader->SetUniform1f("lightS.cosPhyOutter", lightspot.cosPhyOutter);
+
+			
+			//myMaterial->shader->SetUniform3f("lightDirUniform", lightspot.direction);
+
+			//myMaterial->shader->SetUniform3f("lightPos", lightspot.position);
+			//myMaterial->shader->SetUniform3f("lightColor", lightspot.color);
 
 
 			myMaterial->shader->SetUniform3f("material.ambient", myMaterial->ambient);
