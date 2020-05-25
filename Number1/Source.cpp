@@ -15,6 +15,7 @@
 #include"LightPoint.h"
 #include"LightSpot.h"
 #include"Mesh.h"
+#include"Model.h"
 
 using namespace std;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -130,8 +131,12 @@ glm::vec3 cubePositions[] = {
 //上图所示0，1，2构成地一个三角形 2，1，3构成第二个三角形
 
 
-int main()
+int main(int argc,char* argv[])
 {
+	std::string exePath = argv[0];
+	//std::cout <<exePath.substr(0,exePath.find_last_of('\\'))+"\\Model\\nanosuit\\nanosuit.obj" << std::endl;
+
+
 	#pragma region OpenAWindow	
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -185,7 +190,10 @@ int main()
 	//这个函数其实可以一次性声明多个VAO glGenVertexArrays(大于1的数，数组首地址)
 	#pragma region Init And Load to VAO and VBO and EBO
 	
-	Mesh cube(vertices);
+	//Mesh cube(vertices);
+	Model testmodel(exePath.substr(0, exePath.find_last_of('\\')) + "\\Model\\nanosuit\\nanosuit.obj");
+	
+	
 	//unsigned int VAO;
 	//glGenVertexArrays(1, &VAO);
 	//glBindVertexArray(VAO);
@@ -433,7 +441,8 @@ int main()
 			//glBindVertexArray(VAO);
 			//每一次调用glDrawArray()就是一次所谓“Draw Call”
 			//glDrawArrays(GL_TRIANGLES, 0, 36);
-			cube.Draw(myMaterial->shader);
+			//cube.Draw(myMaterial->shader);
+			testmodel.Draw(myMaterial->shader);
 		}
 		
 		
