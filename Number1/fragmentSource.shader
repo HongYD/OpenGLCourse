@@ -155,4 +155,5 @@ void main() {
 	finalResult+=CalculateLightSpot(lightS,uNormal,dirToCamera);
 
 	FragColor=vec4(finalResult,1.0);
+	//FragColor=vec4(1.0,1.0,1.0,1.0);
 }

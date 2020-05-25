@@ -14,6 +14,7 @@
 #include"LightDirectional.h"
 #include"LightPoint.h"
 #include"LightSpot.h"
+#include"Mesh.h"
 
 using namespace std;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -28,11 +29,11 @@ unsigned int LoadImageToGPU(const char* filename, GLint internalformat, GLenum f
 Camera camera(glm::vec3(0.0, 0.0, 3.0f), glm::radians(2.0f), glm::radians(180.0f), glm::vec3(0.0, 1.0f, 0.0));
 #pragma endregion
 #pragma region light declare
-LightDirectional light = LightDirectional(glm::vec3(1.0f, 1.0f, -1.0f), glm::vec3(glm::radians(45.0f), 0.0, 0.0),glm::vec3(1.0f,1.0f,1.0f));
-LightPoint lightpoint0 = LightPoint(glm::vec3(1.0f, 0.0f, 0.0f),glm::vec3(1.0f,1.0f,1.0f));
-LightPoint lightpoint1 = LightPoint(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-LightPoint lightpoint2 = LightPoint(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0));
-LightPoint lightpoint3 = LightPoint(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0, 0.0f, 1.0f));
+LightDirectional light (glm::vec3(1.0f, 1.0f, -1.0f), glm::vec3(glm::radians(45.0f), 0.0, 0.0),glm::vec3(1.0f,1.0f,1.0f));
+LightPoint lightpoint0 (glm::vec3(1.0f, 0.0f, 0.0f),glm::vec3(1.0f,1.0f,1.0f));
+LightPoint lightpoint1 (glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+LightPoint lightpoint2 (glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0));
+LightPoint lightpoint3 (glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0, 0.0f, 1.0f));
 
 
 
@@ -183,83 +184,85 @@ int main()
 	//这里进行VAO声明，glGenVertexArrays()的返回值是一个ID,存在int VAO中
 	//这个函数其实可以一次性声明多个VAO glGenVertexArrays(大于1的数，数组首地址)
 	#pragma region Init And Load to VAO and VBO and EBO
-	unsigned int VAO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
-	//声明VBO,与VAO同理
-	unsigned int VBO;
-	glGenBuffers(1, &VBO);
-	//绑定VAO与VBO
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-
-	unsigned int EBO;
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices),indices ,GL_STATIC_DRAW);
-
-
-	//创建vertex Shader，已经在Shader.h中封装，这里注释
-	//unsigned int vertexShader;
-	//vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	//glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	//glCompileShader(vertexShader);
-
-	/*int  success_vertext;
-	char infoLog[512];
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success_vertext);
-	if (!success_vertext)
-	{
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}*/
-
-	//创建fragment Shader，已经在Shader.h中封装，这里注释
-	//unsigned int fragmentShader;
-	//fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	//glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	//glCompileShader(fragmentShader);
-
-	/*int  success_fragment;
-	char infoLog2[512];
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success_fragment);
-	if (!success_fragment)
-	{
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog2);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog2 << std::endl;
-	}*/
 	
-	//链接Shader，已在Shader.h中封装，注释这里
-	//unsigned int shaderProgram;
-	//shaderProgram = glCreateProgram();
-	//glAttachShader(shaderProgram, vertexShader);
-	//glAttachShader(shaderProgram, fragmentShader);
-	//glLinkProgram(shaderProgram);
+	Mesh cube(vertices);
+	//unsigned int VAO;
+	//glGenVertexArrays(1, &VAO);
+	//glBindVertexArray(VAO);
 
-	//glUseProgram(shaderProgram);
+	////声明VBO,与VAO同理
+	//unsigned int VBO;
+	//glGenBuffers(1, &VBO);
+	////绑定VAO与VBO
+	//glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	//glDeleteShader(vertexShader);
-	//glDeleteShader(fragmentShader);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-	//定点属性,在第零号栏位，每隔三个位置输送一笔资料，类型是GL_Float,不需要归一化。每隔6个挖一次，起始偏移量为0
-	glEnableVertexAttribArray(0); 
+	//unsigned int EBO;
+	//glGenBuffers(1, &EBO);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices),indices ,GL_STATIC_DRAW);
 
-	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
+
+	////创建vertex Shader，已经在Shader.h中封装，这里注释
+	////unsigned int vertexShader;
+	////vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	////glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+	////glCompileShader(vertexShader);
+
+	///*int  success_vertext;
+	//char infoLog[512];
+	//glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success_vertext);
+	//if (!success_vertext)
+	//{
+	//	glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+	//	std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+	//}*/
+
+	////创建fragment Shader，已经在Shader.h中封装，这里注释
+	////unsigned int fragmentShader;
+	////fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	////glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+	////glCompileShader(fragmentShader);
+
+	///*int  success_fragment;
+	//char infoLog2[512];
+	//glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success_fragment);
+	//if (!success_fragment)
+	//{
+	//	glGetShaderInfoLog(vertexShader, 512, NULL, infoLog2);
+	//	std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog2 << std::endl;
+	//}*/
+	//
+	////链接Shader，已在Shader.h中封装，注释这里
+	////unsigned int shaderProgram;
+	////shaderProgram = glCreateProgram();
+	////glAttachShader(shaderProgram, vertexShader);
+	////glAttachShader(shaderProgram, fragmentShader);
+	////glLinkProgram(shaderProgram);
+
+	////glUseProgram(shaderProgram);
+
+	////glDeleteShader(vertexShader);
+	////glDeleteShader(fragmentShader);
+
+
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	////定点属性,在第零号栏位，每隔三个位置输送一笔资料，类型是GL_Float,不需要归一化。每隔6个挖一次，起始偏移量为0
+	//glEnableVertexAttribArray(0); 
+
+	////glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
+	//////定点属性,在第零号栏位，每隔三个位置输送一笔资料，类型是GL_Float,不需要归一化.
+	////glEnableVertexAttribArray(1);
+
+	//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 	////定点属性,在第零号栏位，每隔三个位置输送一笔资料，类型是GL_Float,不需要归一化.
-	//glEnableVertexAttribArray(1);
+	//glEnableVertexAttribArray(2);
 
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	//定点属性,在第零号栏位，每隔三个位置输送一笔资料，类型是GL_Float,不需要归一化.
-	glEnableVertexAttribArray(2);
-
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
-	//定点属性,在第零号栏位，每隔三个位置输送一笔资料，类型是GL_Float,不需要归一化.
-	glEnableVertexAttribArray(3);
+	//glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
+	////定点属性,在第零号栏位，每隔三个位置输送一笔资料，类型是GL_Float,不需要归一化.
+	//glEnableVertexAttribArray(3);
 
 	#pragma endregion Init And Load to VAO and VBO and EBO
 
@@ -302,23 +305,23 @@ int main()
 		
 
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);//还得再Bind一次，因为OpenGL是状态机，之前有可能状态已经改变了。
+		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);//还得再Bind一次，因为OpenGL是状态机，之前有可能状态已经改变了。
 
 		viewMat = camera.GetViewMatrix();
 
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 1; i++)
 		{
 			//Set Material->Shader Programm
 			testshader->use();
 
 			//下面四行可有可无，因为之前已经绑定过了
 			//Set Material->Texture
-			glActiveTexture(GL_TEXTURE0);
+			/*glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, myMaterial->diffuseMapID);
 			glActiveTexture(GL_TEXTURE0+Shader::SPECULAR);
 			glBindTexture(GL_TEXTURE_2D, myMaterial->specularMapID);
 			glActiveTexture(GL_TEXTURE0+Shader::EMISSION);
-			glBindTexture(GL_TEXTURE_2D, myMaterial->emissionMapID);
+			glBindTexture(GL_TEXTURE_2D, myMaterial->emissionMapID);*/
 
 			//Set Material->Uniform
 			//glUniform1i(glGetUniformLocation(testshader->ID, "ourTexture"), 0);
@@ -427,9 +430,10 @@ int main()
 			
 
 			//Set Model
-			glBindVertexArray(VAO);
+			//glBindVertexArray(VAO);
 			//每一次调用glDrawArray()就是一次所谓“Draw Call”
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+			//glDrawArrays(GL_TRIANGLES, 0, 36);
+			cube.Draw(myMaterial->shader);
 		}
 		
 		
